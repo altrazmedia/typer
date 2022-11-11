@@ -1,5 +1,7 @@
-function App() {
-  return <div className="App"></div>;
-}
+import { Router } from "src/features/navigation";
+
+const App = () => {
+  return <Router />;
+};
 
 export default App;
