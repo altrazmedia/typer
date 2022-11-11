@@ -1,19 +1,37 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
 import { Register, SignIn } from "src/features/auth";
+
+import { Home } from "./Home";
 import { Page404 } from "./404";
+import { AnonymousRoute } from "./AnonymousRoute";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 const browserRouter = createBrowserRouter([
   {
     path: "/",
+    element: (
+      <ProtectedRoute>
+        <Home />
+      </ProtectedRoute>
+    ),
     errorElement: <Page404 />,
   },
   {
     path: "/login",
-    element: <SignIn />,
+    element: (
+      <AnonymousRoute>
+        <SignIn />
+      </AnonymousRoute>
+    ),
   },
   {
     path: "/register",
-    element: <Register />,
+    element: (
+      <AnonymousRoute>
+        <Register />
+      </AnonymousRoute>
+    ),
   },
 ]);
 
