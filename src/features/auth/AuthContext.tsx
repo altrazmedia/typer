@@ -6,7 +6,7 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { doc, query, where, getDocs, setDoc } from "firebase/firestore";
-import React, { createContext, PropsWithChildren, useCallback, useEffect, useState } from "react";
+import React, { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from "react";
 
 import { auth, createCollection } from "src/firebase";
 
@@ -21,7 +21,7 @@ interface ContextValue {
   signOut(): void;
 }
 
-export const AuthContext = createContext<ContextValue>(null!);
+const AuthContext = createContext<ContextValue>(null!);
 
 const googleProvider = new GoogleAuthProvider();
 const profilesCollection = createCollection<Profile>("profiles");
@@ -104,3 +104,5 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) =
     </AuthContext.Provider>
   );
 };
+
+export const useAuthContext = () => useContext(AuthContext);

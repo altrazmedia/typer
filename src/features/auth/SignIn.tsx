@@ -1,17 +1,17 @@
-import { FormEventHandler, useContext, useState } from "react";
+import { FormEventHandler, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { FormInput } from "src/features/ui";
 
 import { AuthFormLayout } from "./AuthFormLayout";
-import { AuthContext } from "./AuthContext";
+import { useAuthContext } from "./AuthContext";
 
 export const SignIn: React.FC = () => {
   const [error, setError] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { signInWithGoogle, signIn, signOut } = useContext(AuthContext);
+  const { signInWithGoogle, signIn, signOut } = useAuthContext();
 
   const handleSignInWithGoogleClick = async () => {
     setError(false);

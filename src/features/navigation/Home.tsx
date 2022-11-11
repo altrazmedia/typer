@@ -1,9 +1,7 @@
-import { useContext } from "react";
-
-import { AuthContext } from "src/features/auth";
+import { useAuthContext } from "src/features/auth";
 
 export const Home: React.FC = () => {
-  const { user, profile, signOut } = useContext(AuthContext);
+  const { user, profile, signOut } = useAuthContext();
 
   return (
     <>

@@ -1,9 +1,9 @@
-import { FormEventHandler, useContext, useState } from "react";
+import { FormEventHandler, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { FormInput } from "src/features/ui";
 
-import { AuthContext } from "./AuthContext";
+import { useAuthContext } from "./AuthContext";
 import { AuthFormLayout } from "./AuthFormLayout";
 
 interface Errors {
@@ -25,7 +25,7 @@ export const Register: React.FC = () => {
   const [errors, setErrors] = useState<Errors>({ ...emptyErrors });
   const [generalError, setGeneralError] = useState(false);
 
-  const { registerWithEmailAndPassword } = useContext(AuthContext);
+  const { registerWithEmailAndPassword } = useAuthContext();
 
   const validate = () => {
     var emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
