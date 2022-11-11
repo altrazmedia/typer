@@ -19,6 +19,7 @@ interface ContextValue {
   signIn(email: string, password: string): Promise<any>;
   registerWithEmailAndPassword(email: string, password: string): Promise<any>;
   signOut(): void;
+  isChecking: boolean;
 }
 
 const AuthContext = createContext<ContextValue>(null!);
@@ -27,8 +28,9 @@ const googleProvider = new GoogleAuthProvider();
 const profilesCollection = createCollection<Profile>("profiles");
 
 export const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(auth.currentUser);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [isChecking, setIsChecking] = useState(true);
 
   const getUserProfile = useCallback(async (uid: string) => {
     const q = query(profilesCollection, where("uid", "==", uid));
@@ -77,6 +79,7 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) =
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       setUser(user);
+      setIsChecking(false);
       if (user) {
         const profile = await getUserProfile(user.uid);
         const profileData = profile?.data();
@@ -98,6 +101,7 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) =
         signInWithGoogle,
         signOut,
         registerWithEmailAndPassword,
+        isChecking,
       }}
     >
       {children}

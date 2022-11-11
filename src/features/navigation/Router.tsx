@@ -43,5 +43,10 @@ const browserRouter = createBrowserRouter([
 ]);
 
 export const Router: React.FC<any> = () => {
+  const { isChecking } = useAuthContext();
+
+  // App is checking if any user is already signed in
+  if (isChecking) return null;
+
   return <RouterProvider router={browserRouter} />;
 };
