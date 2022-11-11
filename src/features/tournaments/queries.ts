@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getDocs, query, where } from "firebase/firestore";
+import { doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { createCollection } from "src/firebase";
 import { Tournament, TournamentDB } from "./types";
 
@@ -17,6 +17,26 @@ export const useMyTournamentsList = (userId: string) => {
         ...doc.data(),
         id: doc.id,
       })) as Tournament[];
+    },
+  });
+};
+
+export const useTournament = (tournamentId: string) => {
+  return useQuery({
+    queryKey: ["TOURNAMENT", { tournamentId }] as const,
+    queryFn: async ({ queryKey }) => {
+      const [_, { tournamentId }] = queryKey;
+      const docRef = doc(tournamentsCollection, tournamentId);
+      const result = await getDoc(docRef);
+
+      if (result.exists()) {
+        return {
+          ...result.data(),
+          id: result.id,
+        } as Tournament;
+      }
+
+      return null;
     },
   });
 };

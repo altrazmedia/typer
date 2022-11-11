@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import { Register, SignIn } from "src/features/auth";
-import { TournamentsList } from "src/features/tournaments";
+import { Register, SignIn, useAuthContext } from "src/features/auth";
+import { Tournament, TournamentsList } from "src/features/tournaments";
 
 import { Page404 } from "./404";
 import { AnonymousRoute } from "./AnonymousRoute";
@@ -21,6 +21,10 @@ const browserRouter = createBrowserRouter([
       {
         path: "/",
         element: <TournamentsList />,
+      },
+      {
+        path: "/t/:id",
+        element: <Tournament />,
       },
     ],
   },
