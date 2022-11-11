@@ -11,7 +11,7 @@ export const SignIn: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { signInWithGoogle, signIn, signOut } = useAuthContext();
+  const { signInWithGoogle, signIn } = useAuthContext();
 
   const handleSignInWithGoogleClick = async () => {
     setError(false);
@@ -52,9 +52,6 @@ export const SignIn: React.FC = () => {
       <Link to="/register">
         <button className="btn-ghost btn w-full">Załóż konto</button>
       </Link>
-      <button className="btn-ghost btn" onClick={signOut}>
-        Wyloguj
-      </button>
     </AuthFormLayout>
   );
 };

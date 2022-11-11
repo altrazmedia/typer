@@ -1,20 +1,18 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import { Register, SignIn } from "src/features/auth";
-import { TournamentsList } from "src/features/tournaments";
 
-import { Home } from "./Home";
 import { Page404 } from "./404";
 import { AnonymousRoute } from "./AnonymousRoute";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { Root } from "./Root";
 
 const browserRouter = createBrowserRouter([
   {
     path: "/",
     element: (
       <ProtectedRoute>
-        <Home />
-        <TournamentsList />
+        <Root />
       </ProtectedRoute>
     ),
     errorElement: <Page404 />,
