@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { doc, getDoc, getDocs, query, where } from "firebase/firestore";
+import { doc, getDoc, getDocs, orderBy, query, Timestamp, where } from "firebase/firestore";
+
 import { createCollection } from "src/firebase";
-import { Tournament, TournamentDB } from "./types";
+
+import type { Game, GameDB, GamesListType, Tournament, TournamentDB } from "./types";
 
 const tournamentsCollection = createCollection<TournamentDB>("tournaments");
 
@@ -37,6 +39,26 @@ export const useTournament = (tournamentId: string) => {
       }
 
       return null;
+    },
+  });
+};
+
+export const useTournamentGames = (tournamentId: string, type: GamesListType) => {
+  return useQuery({
+    queryKey: ["TOURNAMENT_GAMES", { tournamentId, type }] as const,
+    queryFn: async ({ queryKey }) => {
+      const [_, { tournamentId, type }] = queryKey;
+      const upcoming = type === "upcoming";
+      const gamesCollection = createCollection<GameDB>(`tournaments/${tournamentId}/games`);
+      const now = Timestamp.now();
+      const q = query(
+        gamesCollection,
+        where("kickoff", upcoming ? ">" : "<=", now),
+        orderBy("kickoff", upcoming ? "asc" : "desc")
+      );
+      const result = await getDocs(q);
+
+      return result.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Game));
     },
   });
 };
