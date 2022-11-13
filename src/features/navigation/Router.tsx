@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import { Register, SignIn, useAuthContext } from "src/features/auth";
 import { Tournament, TournamentsList } from "src/features/tournaments";
+import { Spinner } from "src/features/ui";
 
 import { Page404 } from "./404";
 import { AnonymousRoute } from "./AnonymousRoute";
@@ -50,7 +51,7 @@ export const Router: React.FC<any> = () => {
   const { isChecking } = useAuthContext();
 
   // App is checking if any user is already signed in
-  if (isChecking) return null;
+  if (isChecking) return <Spinner className="mt-6" />;
 
   return <RouterProvider router={browserRouter} />;
 };

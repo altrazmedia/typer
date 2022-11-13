@@ -1,6 +1,8 @@
 import { PropsWithChildren, useState } from "react";
 import { useParams } from "react-router-dom";
 
+import { Spinner } from "src/features/ui";
+
 import { useTournament } from "./queries";
 import { GamesListType } from "./types";
 import { GamesList } from "./GamesList";
@@ -19,6 +21,7 @@ export const Tournament = () => {
 
   return (
     <div>
+      {isLoading && <Spinner />}
       {data && (
         <>
           <h1>{data.name}</h1>

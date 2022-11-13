@@ -1,5 +1,7 @@
 import dayjs from "dayjs";
 
+import { Spinner } from "src/features/ui";
+
 import { useTournamentGames } from "./queries";
 import type { GamesListType } from "./types";
 
@@ -13,6 +15,7 @@ export const GamesList: React.FC<Props> = ({ tournamentId, listType }) => {
 
   return (
     <>
+      {isLoading && <Spinner />}
       {data?.map((game) => (
         <div className="not-prose card card-compact mb-4 w-full bg-base-200 shadow-xl" key={game.id}>
           <div className="card-body">
