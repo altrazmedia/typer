@@ -1,8 +1,8 @@
-import dayjs from "dayjs";
-
 import { Spinner } from "src/features/ui";
+import { useAuthContext } from "src/features/auth";
 
-import { useTournamentGames } from "./queries";
+import { GameCard } from "./GameCard";
+import { useMyPredictions, useTournamentGames } from "./queries";
 import type { GamesListType } from "./types";
 
 interface Props {
@@ -11,21 +11,24 @@ interface Props {
 }
 
 export const GamesList: React.FC<Props> = ({ tournamentId, listType }) => {
-  const { data, isLoading } = useTournamentGames(tournamentId, listType);
+  const { user } = useAuthContext();
+  const { data = [], isLoading } = useTournamentGames(tournamentId, listType);
+  const { data: predictions = [] } = useMyPredictions(
+    user!.uid,
+    data.map((game) => game.id)
+  );
+
+  const getPrediction = (gameId: string) => {
+    return predictions.find((item) => item.gameId === gameId);
+  };
 
   return (
     <>
       {isLoading && <Spinner />}
-      {data?.map((game) => (
-        <div className="not-prose card card-compact mb-4 w-full bg-base-200 shadow-xl" key={game.id}>
-          <div className="card-body">
-            <h2 className="card-title">
-              {game.teamA} {game.teamAScore ?? ""} - {game.teamBScore ?? ""} {game.teamB}
-            </h2>
-            <span>{dayjs(game.kickoff.toDate()).format("DD.MM.YYYY, HH:mm")}</span>
-          </div>
-        </div>
-      ))}
+      {data?.map((game) => {
+        const prediction = getPrediction(game.id);
+        return <GameCard game={game} prediction={prediction} key={game.id} />;
+      })}
       {!isLoading && !data?.length && (
         <h2 className="text-center">
           {listType === "past" ? "Nie ma jeszcze żadnych wyników" : "W tym turnieju nie ma zaplanowanych więcej meczów"}

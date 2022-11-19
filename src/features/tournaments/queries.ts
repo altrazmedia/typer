@@ -1,11 +1,22 @@
-import { useQuery } from "@tanstack/react-query";
-import { doc, getDoc, getDocs, orderBy, query, Timestamp, where } from "firebase/firestore";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { doc, getDoc, getDocs, orderBy, query, setDoc, Timestamp, where } from "firebase/firestore";
 
 import { createCollection } from "src/firebase";
 
-import type { Game, GameDB, GamesListType, Tournament, TournamentDB } from "./types";
+import type {
+  EditPredictionParams,
+  Game,
+  GameDB,
+  GamesListType,
+  Prediction,
+  PredictionDB,
+  PredictionParams,
+  Tournament,
+  TournamentDB,
+} from "./types";
 
 const tournamentsCollection = createCollection<TournamentDB>("tournaments");
+const predictionsCollection = createCollection<PredictionDB>("predictions");
 
 export const useMyTournamentsList = (userId: string) => {
   return useQuery({
@@ -61,4 +72,42 @@ export const useTournamentGames = (tournamentId: string, type: GamesListType) =>
       return result.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Game));
     },
   });
+};
+
+export const useMyPredictions = (uid: string, gamesIds: string[]) => {
+  return useQuery({
+    queryKey: ["MY_PREDICTIONS", { gamesIds, uid }] as const,
+    queryFn: async ({ queryKey }) => {
+      const [_, { gamesIds, uid }] = queryKey;
+      const q = query(predictionsCollection, where("uid", "==", uid), where("gameId", "in", gamesIds));
+      const result = await getDocs(q);
+
+      return result.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Prediction));
+    },
+    enabled: !!gamesIds.length,
+  });
+};
+
+export const usePredictionActions = (uid: string, gameId: string) => {
+  const addPredictionMutation = useMutation<void, any, PredictionParams, any>({
+    mutationFn: async ({ teamAScore, teamBScore }) => {
+      const docRef = doc(predictionsCollection);
+      await setDoc(docRef, { gameId, uid, teamAScore, teamBScore });
+    },
+    onError: () => {
+      window.alert("Nie udało się zapisać typu. Możliwe, że mecz się już rozpoczął");
+    },
+  });
+
+  const editPredictionMutation = useMutation<void, any, EditPredictionParams, any>({
+    mutationFn: async ({ id, teamAScore, teamBScore }) => {
+      const docRef = doc(predictionsCollection, id);
+      await setDoc(docRef, { gameId, uid, teamAScore, teamBScore });
+    },
+    onError: () => {
+      window.alert("Nie udało się zapisać typu. Możliwe, że mecz się już rozpoczął");
+    },
+  });
+
+  return { addPredictionMutation, editPredictionMutation };
 };
