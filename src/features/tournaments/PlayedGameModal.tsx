@@ -25,7 +25,7 @@ export const PlayedGameModal: React.FC<Props> = ({ game, close }) => {
 
   return (
     <Modal close={close}>
-      <div style={{ width: "95vw", maxWidth: "800px" }} className="prose">
+      <div style={{ width: "85vw", maxWidth: "800px" }} className="prose">
         <h1 className="text-center">
           {game.teamA} {game.teamAScore} - {game.teamBScore} {game.teamB}
         </h1>
