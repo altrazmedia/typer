@@ -40,3 +40,5 @@ export interface PredictionParams {
 export interface EditPredictionParams extends PredictionParams {
   id: string;
 }
+
+export type PredictionStatus = "exact" | "result" | "missed" | "none";

@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { doc, getDoc, getDocs, orderBy, query, setDoc, Timestamp, where } from "firebase/firestore";
 
 import { createCollection } from "src/firebase";
+import type { Profile } from "src/features/auth";
 
 import type {
   EditPredictionParams,
@@ -17,6 +18,7 @@ import type {
 
 const tournamentsCollection = createCollection<TournamentDB>("tournaments");
 const predictionsCollection = createCollection<PredictionDB>("predictions");
+const profilesCollection = createCollection<Profile>("profiles");
 
 export const useMyTournamentsList = (userId: string) => {
   return useQuery({
@@ -110,4 +112,33 @@ export const usePredictionActions = (uid: string, gameId: string) => {
   });
 
   return { addPredictionMutation, editPredictionMutation };
+};
+
+export const useTournamentMembers = (tournamentId: string) => {
+  const { data: tournamentData } = useTournament(tournamentId);
+
+  return useQuery({
+    queryKey: ["TOURNAMENT_MEMBERS", { tournamentId }] as const,
+    queryFn: async () => {
+      const q = query(profilesCollection, where("uid", "in", tournamentData?.members));
+      const result = await getDocs(q);
+
+      return result.docs.map((doc) => doc.data());
+    },
+    staleTime: 60 * 60 * 1000,
+    enabled: !!tournamentData?.members.length,
+  });
+};
+
+export const useGamePredictions = (gameId: string) => {
+  return useQuery({
+    queryKey: ["GAME_PREDICTIONS", { gameId }] as const,
+    queryFn: async () => {
+      const q = query(predictionsCollection, where("gameId", "==", gameId));
+      const result = await getDocs(q);
+
+      return result.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Prediction));
+    },
+    staleTime: 60 * 60 * 1000,
+  });
 };
