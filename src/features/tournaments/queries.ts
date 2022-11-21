@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { doc, getDoc, getDocs, orderBy, query, setDoc, Timestamp, where } from "firebase/firestore";
 
 import { createCollection } from "src/firebase";
@@ -20,6 +20,8 @@ const tournamentsCollection = createCollection<TournamentDB>("tournaments");
 const predictionsCollection = createCollection<PredictionDB>("predictions");
 const profilesCollection = createCollection<Profile>("profiles");
 
+const MY_PREDICTIONS_KEY = "MY_PREDICTIONS";
+
 export const useMyTournamentsList = (userId: string) => {
   return useQuery({
     queryKey: ["MY_TOURNAMENTS", { userId }] as const,
@@ -33,6 +35,7 @@ export const useMyTournamentsList = (userId: string) => {
         id: doc.id,
       })) as Tournament[];
     },
+    staleTime: 60 * 60 * 1000,
   });
 };
 
@@ -53,6 +56,7 @@ export const useTournament = (tournamentId: string) => {
 
       return null;
     },
+    staleTime: 60 * 60 * 1000,
   });
 };
 
@@ -78,7 +82,7 @@ export const useTournamentGames = (tournamentId: string, type: GamesListType) =>
 
 export const useMyPredictions = (uid: string, gamesIds: string[]) => {
   return useQuery({
-    queryKey: ["MY_PREDICTIONS", { gamesIds, uid }] as const,
+    queryKey: [MY_PREDICTIONS_KEY, { gamesIds, uid }] as const,
     queryFn: async ({ queryKey }) => {
       const [_, { gamesIds, uid }] = queryKey;
       const q = query(predictionsCollection, where("uid", "==", uid), where("gameId", "in", gamesIds));
@@ -87,14 +91,20 @@ export const useMyPredictions = (uid: string, gamesIds: string[]) => {
       return result.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Prediction));
     },
     enabled: !!gamesIds.length,
+    staleTime: 60 * 60 * 1000,
   });
 };
 
 export const usePredictionActions = (uid: string, gameId: string) => {
+  const queryClient = useQueryClient();
+
   const addPredictionMutation = useMutation<void, any, PredictionParams, any>({
     mutationFn: async ({ teamAScore, teamBScore }) => {
       const docRef = doc(predictionsCollection);
       await setDoc(docRef, { gameId, uid, teamAScore, teamBScore });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries([MY_PREDICTIONS_KEY]);
     },
     onError: () => {
       window.alert("Nie udało się zapisać typu. Możliwe, że mecz się już rozpoczął");
@@ -105,6 +115,9 @@ export const usePredictionActions = (uid: string, gameId: string) => {
     mutationFn: async ({ id, teamAScore, teamBScore }) => {
       const docRef = doc(predictionsCollection, id);
       await setDoc(docRef, { gameId, uid, teamAScore, teamBScore });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries([MY_PREDICTIONS_KEY]);
     },
     onError: () => {
       window.alert("Nie udało się zapisać typu. Możliwe, że mecz się już rozpoczął");
