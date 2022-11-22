@@ -37,7 +37,17 @@
     "extends": [
       "react-app",
       "prettier"
-    ]
+    ],
+    "rules": {
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          "vars": "all",
+          "varsIgnorePattern": "^_",
+          "args": "none"
+        }
+      ]
+    }
   },
   "browserslist": {
     "production": [
