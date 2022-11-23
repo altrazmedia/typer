@@ -27,16 +27,18 @@ export const Tournament = () => {
           <h1>{data.name}</h1>
           <p>{data.description}</p>
 
-          <div className="tabs mb-8 justify-center">
-            <Tab id="upcoming" onClick={setActiveTab} isActive={activeTab === "upcoming"}>
-              Nadchodzące mecze
-            </Tab>
-            <Tab id="past" onClick={setActiveTab} isActive={activeTab === "past"}>
-              Rozegrane mecze
-            </Tab>
-            <Tab id="table" onClick={setActiveTab} isActive={activeTab === "table"}>
-              Tabela
-            </Tab>
+          <div className="mb-7 overflow-x-auto pb-2">
+            <div className="tabs flex-nowrap md:justify-center">
+              <Tab id="upcoming" onClick={setActiveTab} isActive={activeTab === "upcoming"}>
+                Nadchodzące mecze
+              </Tab>
+              <Tab id="past" onClick={setActiveTab} isActive={activeTab === "past"}>
+                Rozegrane mecze
+              </Tab>
+              <Tab id="table" onClick={setActiveTab} isActive={activeTab === "table"}>
+                Tabela
+              </Tab>
+            </div>
           </div>
           {["upcoming", "past"].includes(activeTab) && (
             <GamesList tournamentId={id!} listType={activeTab as GamesListType} />
@@ -55,7 +57,7 @@ export const Tournament = () => {
 };
 
 const Tab: React.FC<TabProps> = ({ id, isActive, onClick, children }) => (
-  <span className={`tab tab-bordered ${isActive ? "tab-active" : ""}`} onClick={() => onClick(id)}>
+  <span className={`tab tab-bordered ${isActive ? "tab-active" : ""} flex-shrink-0`} onClick={() => onClick(id)}>
     {children}
   </span>
 );

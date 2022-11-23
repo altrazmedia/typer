@@ -28,21 +28,21 @@ export const GameCard: React.FC<Props> = ({ game, prediction }) => {
         onClick={handleCardClick}
       >
         <div className="card-body">
-          <div className="flex flex-row justify-center">
-            <div className="flex-1 text-right">
-              <h2 className="card-title justify-end">{game.teamA}</h2>
+          <div className="flex flex-col justify-center md:flex-row">
+            <div className="flex-1">
+              <h2 className="card-title justify-center md:justify-end">{game.teamA}</h2>
             </div>
-            <div className="mx-2 flex-shrink-0">
+            <div className="mx-2 my-1 flex-shrink-0 md:my-0">
               {isUpcomingGame ? (
                 <PredictionForm game={game} prediction={prediction} />
               ) : (
-                <h2 className="card-title">
+                <h2 className="card-title justify-center">
                   {game.teamAScore} - {game.teamBScore}
                 </h2>
               )}
             </div>
             <div className="flex-1">
-              <h2 className="card-title">{game.teamB}</h2>
+              <h2 className="card-title justify-center md:justify-start">{game.teamB}</h2>
             </div>
           </div>
           <span className="mx-auto mt-2 text-sm">{dayjs(game.kickoff.toDate()).format("DD.MM.YYYY, HH:mm")}</span>
