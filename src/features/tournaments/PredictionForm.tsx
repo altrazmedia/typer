@@ -12,37 +12,30 @@ interface Props {
   prediction?: Prediction;
 }
 
+interface PredictionValues {
+  teamAScore?: number;
+  teamBScore?: number;
+}
+
 export const PredictionForm: React.FC<Props> = ({ game, prediction }) => {
   const { user } = useAuthContext();
   const {
-    addPredictionMutation: { mutate: addPrediction },
-    editPredictionMutation: { mutate: editPrediction },
+    addOrEditPrediction: { mutate: arrOrEditPrediction },
   } = usePredictionActions(user!.uid, game.id);
 
-  const [teamAScore, setTeamAScore] = useState<number | undefined>(prediction?.teamAScore);
-  const [teamBScore, setTeamBScore] = useState<number | undefined>(prediction?.teamBScore);
+  const [predictionValues, setPredictionValues] = useState<PredictionValues>({
+    teamAScore: prediction?.teamAScore,
+    teamBScore: prediction?.teamBScore,
+  });
 
-  const addPredictionDebounced = useMemo(() => debounce(addPrediction, 3000), [addPrediction]);
-  const editPredictionDebounced = useMemo(() => debounce(editPrediction, 3000), [editPrediction]);
-
-  useEffect(() => {
-    if (
-      teamAScore !== undefined &&
-      teamBScore !== undefined &&
-      (teamAScore !== prediction?.teamAScore || teamBScore !== prediction?.teamBScore)
-    ) {
-      if (prediction) {
-        editPredictionDebounced({ teamAScore, teamBScore, id: prediction.id });
-      } else {
-        addPredictionDebounced({ teamAScore, teamBScore });
-      }
-    }
-  }, [teamAScore, teamBScore, prediction, addPredictionDebounced, editPredictionDebounced]);
+  const addOrEditPredictionDebounced = useMemo(() => debounce(arrOrEditPrediction, 3000), [arrOrEditPrediction]);
 
   useEffect(() => {
     if (prediction) {
-      setTeamAScore(prediction.teamAScore);
-      setTeamBScore(prediction.teamBScore);
+      setPredictionValues({
+        teamAScore: prediction.teamAScore,
+        teamBScore: prediction.teamBScore,
+      });
     }
   }, [prediction]);
 
@@ -54,15 +47,29 @@ export const PredictionForm: React.FC<Props> = ({ game, prediction }) => {
 
   const isFormDisabled = useMemo(() => dayjs(game.kickoff.toDate()).isBefore(dayjs()), [game.kickoff]);
 
-  const onTeamAChange: ChangeEventHandler<HTMLInputElement> = (e) => setTeamAScore(parseValue(e.target.value));
-  const onTeamBChange: ChangeEventHandler<HTMLInputElement> = (e) => setTeamBScore(parseValue(e.target.value));
+  const handlePredictionValuesChange = (key: keyof PredictionValues, value: number | undefined) => {
+    setPredictionValues((state) => {
+      const values = { ...state, [key]: value };
+      console.log(values);
+      const { teamAScore, teamBScore } = values;
+      if (teamAScore !== undefined && teamBScore !== undefined) {
+        addOrEditPredictionDebounced({ teamAScore, teamBScore });
+      }
+      return values;
+    });
+  };
+
+  const onTeamAChange: ChangeEventHandler<HTMLInputElement> = (e) =>
+    handlePredictionValuesChange("teamAScore", parseValue(e.target.value));
+  const onTeamBChange: ChangeEventHandler<HTMLInputElement> = (e) =>
+    handlePredictionValuesChange("teamBScore", parseValue(e.target.value));
 
   return (
     <div className="flex flex-col items-center">
       <div>
         <input
           className="h-full w-8 rounded-md bg-base-content px-1 text-center text-xl text-base-100"
-          value={teamAScore?.toString() || ""}
+          value={predictionValues.teamAScore?.toString() || ""}
           onChange={onTeamAChange}
           disabled={isFormDisabled}
           placeholder="?"
@@ -70,7 +77,7 @@ export const PredictionForm: React.FC<Props> = ({ game, prediction }) => {
         <span className="mx-2">-</span>
         <input
           className="h-full w-8 rounded-md bg-base-content px-1 text-center text-xl text-base-100"
-          value={teamBScore?.toString() || ""}
+          value={predictionValues.teamBScore?.toString() || ""}
           onChange={onTeamBChange}
           disabled={isFormDisabled}
           placeholder="?"

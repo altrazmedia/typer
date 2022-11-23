@@ -12,8 +12,8 @@ interface Props {
 
 export const GamesList: React.FC<Props> = ({ tournamentId, listType }) => {
   const { user } = useAuthContext();
-  const { data = [], isLoading } = useTournamentGames(tournamentId, listType);
-  const { data: predictions = [] } = useMyPredictions(
+  const { data = [], isLoading: isLoadingGames } = useTournamentGames(tournamentId, listType);
+  const { data: predictions = [], isLoading: isLoadingPredictions } = useMyPredictions(
     user!.uid,
     data.map((game) => game.id)
   );
@@ -21,6 +21,8 @@ export const GamesList: React.FC<Props> = ({ tournamentId, listType }) => {
   const getPrediction = (gameId: string) => {
     return predictions.find((item) => item.gameId === gameId);
   };
+
+  const isLoading = isLoadingGames || isLoadingPredictions;
 
   return (
     <>

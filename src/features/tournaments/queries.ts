@@ -5,7 +5,6 @@ import { createCollection } from "src/firebase";
 import type { Profile } from "src/features/auth";
 
 import type {
-  EditPredictionParams,
   Game,
   GameDB,
   GamesListType,
@@ -98,9 +97,12 @@ export const useMyPredictions = (uid: string, gamesIds: string[]) => {
 export const usePredictionActions = (uid: string, gameId: string) => {
   const queryClient = useQueryClient();
 
-  const addPredictionMutation = useMutation<void, any, PredictionParams, any>({
+  const addOrEditPrediction = useMutation<void, any, PredictionParams, any>({
     mutationFn: async ({ teamAScore, teamBScore }) => {
-      const docRef = doc(predictionsCollection);
+      const q = query(predictionsCollection, where("uid", "==", uid), where("gameId", "==", gameId));
+      const result = await getDocs(q);
+      const prediction = result.docs[0];
+      const docRef = prediction?.ref || doc(predictionsCollection);
       await setDoc(docRef, { gameId, uid, teamAScore, teamBScore });
     },
     onSuccess: () => {
@@ -111,20 +113,7 @@ export const usePredictionActions = (uid: string, gameId: string) => {
     },
   });
 
-  const editPredictionMutation = useMutation<void, any, EditPredictionParams, any>({
-    mutationFn: async ({ id, teamAScore, teamBScore }) => {
-      const docRef = doc(predictionsCollection, id);
-      await setDoc(docRef, { gameId, uid, teamAScore, teamBScore });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries([MY_PREDICTIONS_KEY]);
-    },
-    onError: () => {
-      window.alert("Nie udało się zapisać typu. Możliwe, że mecz się już rozpoczął");
-    },
-  });
-
-  return { addPredictionMutation, editPredictionMutation };
+  return { addOrEditPrediction };
 };
 
 export const useTournamentMembers = (tournamentId: string) => {
