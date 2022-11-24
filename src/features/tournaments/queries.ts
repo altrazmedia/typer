@@ -79,7 +79,8 @@ export const useTournamentGames = (tournamentId: string, type: GamesListType) =>
   });
 };
 
-export const useMyPredictions = (uid: string, gamesIds: string[]) => {
+export const useMyPredictions = (params: { uid: string; gamesIds: string[]; isEnabled: boolean }) => {
+  const { gamesIds, isEnabled, uid } = params;
   return useQuery({
     queryKey: [MY_PREDICTIONS_KEY, { gamesIds, uid }] as const,
     queryFn: async ({ queryKey }) => {
@@ -89,7 +90,7 @@ export const useMyPredictions = (uid: string, gamesIds: string[]) => {
 
       return result.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Prediction));
     },
-    enabled: !!gamesIds.length,
+    enabled: isEnabled && !!gamesIds.length,
     staleTime: 60 * 60 * 1000,
   });
 };
