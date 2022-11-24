@@ -11,10 +11,12 @@ import type {
   Prediction,
   PredictionDB,
   PredictionParams,
+  Standings,
   Tournament,
   TournamentDB,
 } from "./types";
 import { useCallback } from "react";
+import { getPredictionStatus } from "./utils";
 
 const tournamentsCollection = createCollection<TournamentDB>("tournaments");
 const predictionsCollection = createCollection<PredictionDB>("predictions");
@@ -154,5 +156,59 @@ export const useGamePredictions = (gameId: string) => {
       return result.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Prediction));
     },
     staleTime: 60 * 60 * 1000,
+  });
+};
+
+// To be replaced with Functions in the future
+export const useStandings = (tournamentId: string) => {
+  const { data: tournamentData } = useTournament(tournamentId);
+
+  return useQuery({
+    queryKey: ["TABLE", { tournamentId }],
+    queryFn: async () => {
+      const gamesCollection = createCollection<GameDB>(`tournaments/${tournamentId}/games`);
+      // const now = Timestamp.now();
+      const gamesQuery = query(gamesCollection, where("teamAScore", ">", -1));
+      const gamesResult = await getDocs(gamesQuery);
+      const games = gamesResult.docs.map((item) => ({ ...item.data(), id: item.id }));
+
+      const predictionsQuery = query(
+        predictionsCollection,
+        where(
+          "gameId",
+          "in",
+          games.map((game) => game.id)
+        )
+      );
+      const predictionsResult = await getDocs(predictionsQuery);
+      const predictions = predictionsResult.docs.map((item) => ({ ...item.data(), id: item.id }));
+
+      const standings: Standings = tournamentData!.members.map((uid) => {
+        let numberOfExact = 0;
+        let numberOfResults = 0;
+
+        games.forEach((game) => {
+          const prediction = predictions.find((item) => item.gameId === game.id && item.uid === uid);
+          const predictionStatus = getPredictionStatus({
+            teamAPrediction: prediction?.teamAScore,
+            teamBPrediction: prediction?.teamBScore,
+            teamAScore: game.teamAScore,
+            teamBScore: game.teamBScore,
+          });
+          if (predictionStatus === "exact") numberOfExact++;
+          if (predictionStatus === "result") numberOfResults++;
+        });
+
+        return {
+          exact: numberOfExact,
+          results: numberOfResults,
+          points: numberOfExact * tournamentData!.pointsForExact + numberOfResults * tournamentData!.pointsForResult,
+          uid,
+        };
+      });
+
+      return standings.sort((a, b) => b.points - a.points);
+    },
+    enabled: !!tournamentData,
   });
 };

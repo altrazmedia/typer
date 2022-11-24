@@ -6,8 +6,9 @@ import { Spinner } from "src/features/ui";
 import { useTournament } from "./queries";
 import { GamesListType } from "./types";
 import { GamesList } from "./GamesList";
+import { Standings } from "./Standings";
 
-type TabID = "upcoming" | "past" | "table";
+type TabID = "upcoming" | "past" | "standings";
 interface TabProps extends PropsWithChildren {
   id: TabID;
   isActive: boolean;
@@ -35,7 +36,7 @@ export const Tournament = () => {
               <Tab id="past" onClick={setActiveTab} isActive={activeTab === "past"}>
                 Rozegrane mecze
               </Tab>
-              <Tab id="table" onClick={setActiveTab} isActive={activeTab === "table"}>
+              <Tab id="standings" onClick={setActiveTab} isActive={activeTab === "standings"}>
                 Tabela
               </Tab>
             </div>
@@ -43,6 +44,7 @@ export const Tournament = () => {
           {["upcoming", "past"].includes(activeTab) && (
             <GamesList tournamentId={id!} listType={activeTab as GamesListType} />
           )}
+          {activeTab === "standings" && <Standings tournamentId={id!} />}
         </>
       )}
       {!data && !isLoading && (

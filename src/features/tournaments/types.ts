@@ -7,6 +7,8 @@ export interface TournamentDB {
   name: string;
   description: string;
   members: string[];
+  pointsForResult: number;
+  pointsForExact: number;
 }
 
 export interface Tournament extends TournamentDB, ObjWithId {}
@@ -42,3 +44,12 @@ export interface EditPredictionParams extends PredictionParams {
 }
 
 export type PredictionStatus = "exact" | "result" | "missed" | "none";
+
+export interface StandingsRow {
+  uid: string;
+  points: number;
+  exact: number;
+  results: number;
+}
+
+export type Standings = StandingsRow[];
