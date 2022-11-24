@@ -13,13 +13,8 @@ interface Props {
 
 export const PlayedGameModal: React.FC<Props> = ({ game, close }) => {
   const { id: tournamentId } = useParams();
-  const { data: members, isLoading: membersLoading } = useTournamentMembers(tournamentId!);
+  const { isLoading: membersLoading, findMemberName } = useTournamentMembers(tournamentId!);
   const { data: predictions, isLoading: predictionsLoading, isError } = useGamePredictions(game.id);
-
-  const findMemberName = (uid: string) => {
-    const member = members?.find((item) => item.uid === uid);
-    return member?.name || uid;
-  };
 
   const isLoading = membersLoading || predictionsLoading;
 

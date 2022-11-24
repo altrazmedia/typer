@@ -14,6 +14,7 @@ import type {
   Tournament,
   TournamentDB,
 } from "./types";
+import { useCallback } from "react";
 
 const tournamentsCollection = createCollection<TournamentDB>("tournaments");
 const predictionsCollection = createCollection<PredictionDB>("predictions");
@@ -120,7 +121,7 @@ export const usePredictionActions = (uid: string, gameId: string) => {
 export const useTournamentMembers = (tournamentId: string) => {
   const { data: tournamentData } = useTournament(tournamentId);
 
-  return useQuery({
+  const queryData = useQuery({
     queryKey: ["TOURNAMENT_MEMBERS", { tournamentId }] as const,
     queryFn: async () => {
       const q = query(profilesCollection, where("uid", "in", tournamentData?.members));
@@ -131,6 +132,16 @@ export const useTournamentMembers = (tournamentId: string) => {
     staleTime: 60 * 60 * 1000,
     enabled: !!tournamentData?.members.length,
   });
+
+  const findMemberName = useCallback(
+    (uid: string) => {
+      const member = queryData.data?.find((item) => item.uid === uid);
+      return member?.name || uid;
+    },
+    [queryData.data]
+  );
+
+  return { ...queryData, findMemberName };
 };
 
 export const useGamePredictions = (gameId: string) => {
