@@ -50,7 +50,6 @@ export const PredictionForm: React.FC<Props> = ({ game, prediction }) => {
   const handlePredictionValuesChange = (key: keyof PredictionValues, value: number | undefined) => {
     setPredictionValues((state) => {
       const values = { ...state, [key]: value };
-      console.log(values);
       const { teamAScore, teamBScore } = values;
       if (teamAScore !== undefined && teamBScore !== undefined) {
         addOrEditPredictionDebounced({ teamAScore, teamBScore });
