@@ -172,14 +172,7 @@ export const useStandings = (tournamentId: string) => {
       const gamesResult = await getDocs(gamesQuery);
       const games = gamesResult.docs.map((item) => ({ ...item.data(), id: item.id }));
 
-      const predictionsQuery = query(
-        predictionsCollection,
-        where(
-          "gameId",
-          "in",
-          games.map((game) => game.id)
-        )
-      );
+      const predictionsQuery = query(predictionsCollection, where("uid", "in", tournamentData?.members));
       const predictionsResult = await getDocs(predictionsQuery);
       const predictions = predictionsResult.docs.map((item) => ({ ...item.data(), id: item.id }));
 
