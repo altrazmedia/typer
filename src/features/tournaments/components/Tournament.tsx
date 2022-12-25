@@ -3,8 +3,8 @@ import { useParams } from "react-router-dom";
 
 import { Spinner } from "src/features/ui";
 
-import { useTournament } from "./queries";
-import { GamesListType } from "./types";
+import { useTournament } from "../hooks";
+import { GamesListType } from "../types";
 import { GamesList } from "./GamesList";
 import { Standings } from "./Standings";
 

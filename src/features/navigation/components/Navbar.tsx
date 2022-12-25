@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { useAuthContext } from "../auth";
+
+import { useAuthContext } from "src/features/auth";
 
 export const Navbar: React.FC = () => {
   const { signOut } = useAuthContext();

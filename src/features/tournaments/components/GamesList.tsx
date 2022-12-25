@@ -2,8 +2,8 @@ import { Spinner } from "src/features/ui";
 import { useAuthContext } from "src/features/auth";
 
 import { GameCard } from "./GameCard";
-import { useMyPredictions, useTournamentGames } from "./queries";
-import type { GamesListType } from "./types";
+import { useMyPredictions, useTournamentGames } from "../hooks";
+import type { GamesListType } from "../types";
 
 interface Props {
   tournamentId: string;

@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import { PlayedGameModal } from "./PlayedGameModal";
 import { PredictionForm } from "./PredictionForm";
-import { Game, Prediction } from "./types";
+import { Game, Prediction } from "../types";
 
 interface Props {
   game: Game;
@@ -22,7 +22,7 @@ export const GameCard: React.FC<Props> = ({ game, prediction }) => {
   return (
     <>
       <div
-        className={`not-prose card-compact card mb-4 w-full bg-base-200 shadow-xl ${
+        className={`not-prose card card-compact mb-4 w-full bg-base-200 shadow-xl ${
           isUpcomingGame ? "" : "cursor-pointer"
         }`}
         onClick={handleCardClick}

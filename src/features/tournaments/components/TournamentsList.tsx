@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuthContext } from "src/features/auth";
 import { Spinner } from "src/features/ui";
 
-import { useMyTournamentsList } from "./queries";
+import { useMyTournamentsList } from "../hooks";
 
 export const TournamentsList: React.FC = () => {
   const { user } = useAuthContext();

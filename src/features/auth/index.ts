@@ -1,5 +1,3 @@
-export { useAuthContext, AuthContextProvider } from "./AuthContext";
-export { SignIn } from "./SignIn";
-export { Register } from "./Register";
-
+export * from "./components";
+export * from "./contexts";
 export * from "./types";

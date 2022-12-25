@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
+import { AuthContextProvider } from "src/features/auth";
 import { Router } from "src/features/navigation";
-import { AuthContextProvider } from "./features/auth/AuthContext";
 
 const queryClient = new QueryClient();
 

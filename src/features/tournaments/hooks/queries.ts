@@ -14,9 +14,9 @@ import type {
   Standings,
   Tournament,
   TournamentDB,
-} from "./types";
+} from "../types";
 import { useCallback } from "react";
-import { getPredictionStatus } from "./utils";
+import { getPredictionStatus } from "../utils";
 
 const tournamentsCollection = createCollection<TournamentDB>("tournaments");
 const predictionsCollection = createCollection<PredictionDB>("predictions");

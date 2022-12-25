@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { FormInput } from "src/features/ui";
 
 import { AuthFormLayout } from "./AuthFormLayout";
-import { useAuthContext } from "./AuthContext";
+import { useAuthContext } from "../contexts";
 
 export const SignIn: React.FC = () => {
   const [error, setError] = useState(false);

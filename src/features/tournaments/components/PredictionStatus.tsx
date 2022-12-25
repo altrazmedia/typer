@@ -1,4 +1,4 @@
-import { getPredictionStatus } from "./utils";
+import { getPredictionStatus } from "../utils";
 
 interface Props {
   teamAPrediction?: number;

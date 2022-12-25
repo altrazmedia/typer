@@ -1,6 +1,6 @@
 import { Spinner } from "src/features/ui";
 
-import { useStandings, useTournament, useTournamentMembers } from "./queries";
+import { useStandings, useTournament, useTournamentMembers } from "../hooks";
 
 interface Props {
   tournamentId: string;

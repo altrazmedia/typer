@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { FormInput } from "src/features/ui";
 
-import { useAuthContext } from "./AuthContext";
+import { useAuthContext } from "../contexts";
 import { AuthFormLayout } from "./AuthFormLayout";
 
 interface Errors {

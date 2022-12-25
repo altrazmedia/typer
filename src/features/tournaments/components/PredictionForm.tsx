@@ -2,10 +2,10 @@ import dayjs from "dayjs";
 import debounce from "debounce";
 import { ChangeEventHandler, useEffect, useMemo, useState } from "react";
 
-import { useAuthContext } from "../auth";
-import { usePredictionActions } from "./queries";
+import { useAuthContext } from "src/features/auth";
 
-import type { Game, Prediction } from "./types";
+import { usePredictionActions } from "../hooks";
+import type { Game, Prediction } from "../types";
 
 interface Props {
   game: Game;

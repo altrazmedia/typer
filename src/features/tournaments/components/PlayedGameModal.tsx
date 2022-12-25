@@ -3,8 +3,8 @@ import { useParams } from "react-router-dom";
 import { Modal, Spinner } from "src/features/ui";
 
 import { PredictionStatus } from "./PredictionStatus";
-import { useGamePredictions, useTournamentMembers } from "./queries";
-import { Game } from "./types";
+import { useGamePredictions, useTournamentMembers } from "../hooks/queries";
+import { Game } from "../types";
 
 interface Props {
   game: Game;

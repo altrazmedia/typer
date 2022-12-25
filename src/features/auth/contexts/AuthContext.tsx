@@ -10,7 +10,7 @@ import React, { createContext, PropsWithChildren, useCallback, useContext, useEf
 
 import { auth, createCollection } from "src/firebase";
 
-import type { Profile } from "./types";
+import type { Profile } from "../types";
 
 interface ContextValue {
   user: User | null;
