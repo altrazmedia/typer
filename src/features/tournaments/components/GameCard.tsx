@@ -3,25 +3,39 @@ import { useState } from "react";
 import { PlayedGameModal } from "./PlayedGameModal";
 import { PredictionForm } from "./PredictionForm";
 import { Game, Prediction } from "../types";
+import { isTournamentAdmin } from "../utils";
+import { useAuthContext } from "src/features/auth";
+import { useTournament } from "../hooks";
+import { EditGameModal } from "./EditGameModal";
 
 interface Props {
   game: Game;
   prediction?: Prediction;
+  tournamentId: string;
 }
 
-export const GameCard: React.FC<Props> = ({ game, prediction }) => {
-  const [isModalOpen, setModal] = useState(false);
+export const GameCard: React.FC<Props> = ({ game, prediction, tournamentId }) => {
+  const { user } = useAuthContext();
+  const { data: tournament } = useTournament(tournamentId);
+
+  const [isBetsModalOpen, setBetsModal] = useState(false);
+  const [isEditGameModalOpen, setEditGameModal] = useState(false);
+
   const isUpcomingGame = dayjs(game.kickoff.toDate()).isAfter(dayjs());
 
   const handleOpenBetsClick = () => {
     if (!isUpcomingGame) {
-      setModal(true);
+      setBetsModal(true);
     }
+  };
+
+  const handleEditGameClick = () => {
+    setEditGameModal(true);
   };
 
   return (
     <>
-      <div className={`not-prose card card-compact mb-4 w-full bg-base-200 shadow-xl`}>
+      <div className={`not-prose card-compact card mb-4 w-full bg-base-200 shadow-xl`}>
         <div className="card-body">
           <span className="mx-auto text-sm">{dayjs(game.kickoff.toDate()).format("DD.MM.YYYY, HH:mm")}</span>
 
@@ -48,10 +62,18 @@ export const GameCard: React.FC<Props> = ({ game, prediction }) => {
                 Zobacz typy
               </span>
             )}
+            {isTournamentAdmin(user!.uid, tournament!) && (
+              <span className="btn-ghost btn-sm btn" onClick={handleEditGameClick}>
+                Edytuj mecz
+              </span>
+            )}
           </div>
         </div>
       </div>
-      {isModalOpen && <PlayedGameModal close={() => setModal(false)} game={game} />}
+      {isBetsModalOpen && <PlayedGameModal close={() => setBetsModal(false)} game={game} />}
+      {isEditGameModalOpen && (
+        <EditGameModal close={() => setEditGameModal(false)} game={game} tournamentId={tournamentId} />
+      )}
     </>
   );
 };

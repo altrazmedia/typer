@@ -23,6 +23,7 @@ const predictionsCollection = createCollection<PredictionDB>("predictions");
 const profilesCollection = createCollection<Profile>("profiles");
 
 const MY_PREDICTIONS_KEY = "MY_PREDICTIONS";
+const TOURNAMENT_GAMES_KEY = "TOURNAMENT_GAMES";
 
 export const useMyTournamentsList = (userId: string) => {
   return useQuery({
@@ -64,7 +65,7 @@ export const useTournament = (tournamentId: string) => {
 
 export const useTournamentGames = (tournamentId: string, type: GamesListType) => {
   return useQuery({
-    queryKey: ["TOURNAMENT_GAMES", { tournamentId, type }] as const,
+    queryKey: [TOURNAMENT_GAMES_KEY, { tournamentId, type }] as const,
     queryFn: async ({ queryKey }) => {
       const [_, { tournamentId, type }] = queryKey;
       const upcoming = type === "upcoming";
@@ -204,4 +205,37 @@ export const useStandings = (tournamentId: string) => {
     },
     enabled: !!tournamentData,
   });
+};
+
+export const useGameActions = (tournamentId: string) => {
+  const queryClient = useQueryClient();
+  const gamesCollection = createCollection<GameDB>(`tournaments/${tournamentId}/games`);
+
+  const addGame = useMutation<void, any, GameDB, any>({
+    mutationFn: async (gameData) => {
+      const docRef = doc(gamesCollection);
+      await setDoc(docRef, gameData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries([TOURNAMENT_GAMES_KEY]);
+    },
+    onError: () => {
+      window.alert("Nie udało się dodać meczu");
+    },
+  });
+
+  const editGame = useMutation<void, any, Game, any>({
+    mutationFn: async (gameData) => {
+      const docRef = doc(gamesCollection, gameData.id);
+      await setDoc(docRef, gameData);
+    },
+    onSuccess: (_, params) => {
+      queryClient.setQueriesData<Game[]>(
+        [TOURNAMENT_GAMES_KEY],
+        (data) => data?.map((game) => (game.id === params.id ? params : game)) || []
+      );
+    },
+  });
+
+  return { addGame, editGame };
 };
