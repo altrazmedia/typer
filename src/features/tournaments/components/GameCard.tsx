@@ -13,7 +13,7 @@ export const GameCard: React.FC<Props> = ({ game, prediction }) => {
   const [isModalOpen, setModal] = useState(false);
   const isUpcomingGame = dayjs(game.kickoff.toDate()).isAfter(dayjs());
 
-  const handleCardClick = () => {
+  const handleOpenBetsClick = () => {
     if (!isUpcomingGame) {
       setModal(true);
     }
@@ -21,13 +21,10 @@ export const GameCard: React.FC<Props> = ({ game, prediction }) => {
 
   return (
     <>
-      <div
-        className={`not-prose card card-compact mb-4 w-full bg-base-200 shadow-xl ${
-          isUpcomingGame ? "" : "cursor-pointer"
-        }`}
-        onClick={handleCardClick}
-      >
+      <div className={`not-prose card card-compact mb-4 w-full bg-base-200 shadow-xl`}>
         <div className="card-body">
+          <span className="mx-auto text-sm">{dayjs(game.kickoff.toDate()).format("DD.MM.YYYY, HH:mm")}</span>
+
           <div className="flex flex-col justify-center md:flex-row">
             <div className="flex-1">
               <h2 className="card-title justify-center md:justify-end">{game.teamA}</h2>
@@ -45,7 +42,13 @@ export const GameCard: React.FC<Props> = ({ game, prediction }) => {
               <h2 className="card-title justify-center md:justify-start">{game.teamB}</h2>
             </div>
           </div>
-          <span className="mx-auto mt-2 text-sm">{dayjs(game.kickoff.toDate()).format("DD.MM.YYYY, HH:mm")}</span>
+          <div className="flex flex-row justify-center">
+            {!isUpcomingGame && (
+              <span className="btn-ghost btn-sm btn" onClick={handleOpenBetsClick}>
+                Zobacz typy
+              </span>
+            )}
+          </div>
         </div>
       </div>
       {isModalOpen && <PlayedGameModal close={() => setModal(false)} game={game} />}
