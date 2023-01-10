@@ -9,6 +9,7 @@ export interface TournamentDB {
   members: string[];
   pointsForResult: number;
   pointsForExact: number;
+  admins: string[];
 }
 
 export interface Tournament extends TournamentDB, ObjWithId {}

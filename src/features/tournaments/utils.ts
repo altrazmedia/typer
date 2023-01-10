@@ -1,4 +1,4 @@
-import type { PredictionStatus } from "./types";
+import type { PredictionStatus, Tournament } from "./types";
 
 const isScoreDefined = (value: number | undefined): value is number => value !== undefined && value !== null;
 
@@ -33,3 +33,5 @@ export const getPredictionStatus = (params: {
 
   return "missed";
 };
+
+export const isTournamentAdmin = (userId: string, tournament: Tournament) => tournament.admins.includes(userId);
