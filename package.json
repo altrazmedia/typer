@@ -14,24 +14,25 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.4.3",
-    "react-scripts": "5.0.1",
     "typescript": "^4.4.2"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.8",
     "@types/debounce": "^1.2.1",
+    "@vitejs/plugin-react": "^4.0.4",
     "autoprefixer": "^10.4.13",
     "daisyui": "^2.39.0",
     "eslint-config-prettier": "^8.5.0",
     "postcss": "^8.4.19",
     "prettier": "^2.7.1",
     "prettier-plugin-tailwindcss": "^0.1.13",
-    "tailwindcss": "^3.2.3"
+    "tailwindcss": "^3.2.3",
+    "vite": "^4.4.9"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "eject": "react-scripts eject"
+    "dev": "vite --port 3000",
+    "build": "tsc && vite build",
+    "preview": "vite preview --port 3500"
   },
   "eslintConfig": {
     "extends": [

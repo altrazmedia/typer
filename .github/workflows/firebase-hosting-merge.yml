@@ -10,12 +10,12 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     env:
-      REACT_APP_API_KEY: "${{ secrets.REACT_APP_API_KEY }}"
-      REACT_APP_AUTH_DOMAIN: "${{ secrets.REACT_APP_AUTH_DOMAIN }}"
-      REACT_APP_PROJECT_ID: "${{ secrets.REACT_APP_PROJECT_ID }}"
-      REACT_APP_STORAGE_BUCKET: "${{ secrets.REACT_APP_STORAGE_BUCKET }}"
-      REACT_APP_MESSAGING_SENDER_ID: "${{ secrets.REACT_APP_MESSAGING_SENDER_ID }}"
-      REACT_APP_AAP_ID: "${{ secrets.REACT_APP_AAP_ID }}"
+      VITE_API_KEY: "${{ secrets.VITE_API_KEY }}"
+      VITE_AUTH_DOMAIN: "${{ secrets.VITE_AUTH_DOMAIN }}"
+      VITE_PROJECT_ID: "${{ secrets.VITE_PROJECT_ID }}"
+      VITE_STORAGE_BUCKET: "${{ secrets.VITE_STORAGE_BUCKET }}"
+      VITE_MESSAGING_SENDER_ID: "${{ secrets.VITE_MESSAGING_SENDER_ID }}"
+      VITE_AAP_ID: "${{ secrets.VITE_AAP_ID }}"
     steps:
       - uses: actions/checkout@v2
       - run: npm install
