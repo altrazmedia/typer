@@ -83,18 +83,17 @@ export const useTournamentGames = (tournamentId: string, type: GamesListType) =>
   });
 };
 
-export const useMyPredictions = (params: { uid: string; gamesIds: string[]; isEnabled: boolean }) => {
-  const { gamesIds, isEnabled, uid } = params;
+export const useMyPredictions = (params: { uid: string; isEnabled: boolean }) => {
+  const { isEnabled, uid } = params;
   return useQuery({
-    queryKey: [MY_PREDICTIONS_KEY, { gamesIds, uid }] as const,
-    queryFn: async ({ queryKey }) => {
-      const [_, { gamesIds, uid }] = queryKey;
-      const q = query(predictionsCollection, where("uid", "==", uid), where("gameId", "in", gamesIds));
+    queryKey: [MY_PREDICTIONS_KEY],
+    queryFn: async () => {
+      const q = query(predictionsCollection, where("uid", "==", uid));
       const result = await getDocs(q);
 
       return result.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Prediction));
     },
-    enabled: isEnabled && !!gamesIds.length,
+    enabled: isEnabled,
     staleTime: 60 * 60 * 1000,
   });
 };
@@ -102,16 +101,31 @@ export const useMyPredictions = (params: { uid: string; gamesIds: string[]; isEn
 export const usePredictionActions = (uid: string, gameId: string) => {
   const queryClient = useQueryClient();
 
-  const addOrEditPrediction = useMutation<void, any, PredictionParams, any>({
-    mutationFn: async ({ teamAScore, teamBScore }) => {
+  const addOrEditPrediction = useMutation({
+    mutationFn: async ({ teamAScore, teamBScore }: PredictionParams) => {
       const q = query(predictionsCollection, where("uid", "==", uid), where("gameId", "==", gameId));
       const result = await getDocs(q);
-      const prediction = result.docs[0];
-      const docRef = prediction?.ref || doc(predictionsCollection);
-      await setDoc(docRef, { gameId, uid, teamAScore, teamBScore });
+      const predictionDoc = result.docs[0];
+      const docRef = predictionDoc?.ref || doc(predictionsCollection);
+      const prediction: PredictionDB =  { gameId, uid, teamAScore, teamBScore };
+      await setDoc(docRef, prediction);
+      const predictionDb: Prediction = {...prediction, id: docRef.id };
+      return predictionDb;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries([MY_PREDICTIONS_KEY]);
+    onSuccess: (newPrediction) => {
+      queryClient.setQueryData([MY_PREDICTIONS_KEY], (data: Prediction[] | undefined) => {
+        if (data) {
+          const index = data.findIndex(prediction => prediction.id === newPrediction.id);      
+          if (index !== -1) {
+            data[index] = newPrediction;
+          } else {
+            data.push(newPrediction);
+          }
+          return data;
+        } else {
+          return [newPrediction];
+        }
+      });
     },
     onError: () => {
       window.alert("Nie udało się zapisać typu. Możliwe, że mecz się już rozpoczął");
