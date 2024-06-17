@@ -23,7 +23,7 @@ export const GamesList: React.FC<Props> = ({ tournamentId, listType }) => {
     data: predictions = [],
     isLoading: isLoadingPredictions,
     fetchStatus: predictionsFetchStatus,
-  } = useMyPredictions({ uid: user!.uid, gamesIds: data.map((game) => game.id), isEnabled: listType === "upcoming" });
+  } = useMyPredictions({ uid: user!.uid, isEnabled: listType === "upcoming" });
 
   const getPrediction = (gameId: string) => {
     return predictions.find((item) => item.gameId === gameId);

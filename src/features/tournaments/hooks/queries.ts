@@ -83,18 +83,17 @@ export const useTournamentGames = (tournamentId: string, type: GamesListType) =>
   });
 };
 
-export const useMyPredictions = (params: { uid: string; gamesIds: string[]; isEnabled: boolean }) => {
-  const { gamesIds, isEnabled, uid } = params;
+export const useMyPredictions = (params: { uid: string; isEnabled: boolean }) => {
+  const { isEnabled, uid } = params;
   return useQuery({
-    queryKey: [MY_PREDICTIONS_KEY, { gamesIds, uid }] as const,
-    queryFn: async ({ queryKey }) => {
-      const [_, { gamesIds, uid }] = queryKey;
-      const q = query(predictionsCollection, where("uid", "==", uid), where("gameId", "in", gamesIds));
+    queryKey: [MY_PREDICTIONS_KEY],
+    queryFn: async () => {
+      const q = query(predictionsCollection, where("uid", "==", uid));
       const result = await getDocs(q);
 
       return result.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Prediction));
     },
-    enabled: isEnabled && !!gamesIds.length,
+    enabled: isEnabled,
     staleTime: 60 * 60 * 1000,
   });
 };
