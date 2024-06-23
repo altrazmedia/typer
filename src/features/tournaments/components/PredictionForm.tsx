@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import debounce from "debounce";
-import { ChangeEventHandler, useEffect, useMemo, useState } from "react";
+import React, { ChangeEventHandler, useEffect, useMemo, useState } from "react";
 
 import { useAuthContext } from "src/features/auth";
 
@@ -66,22 +66,27 @@ export const PredictionForm: React.FC<Props> = ({ game, prediction }) => {
   return (
     <div className="flex flex-col items-center">
       <div>
-        <input
-          className="h-full w-8 rounded-md bg-base-content px-1 text-center text-xl text-base-100"
+        <ScoreInput
           value={predictionValues.teamAScore?.toString() || ""}
           onChange={onTeamAChange}
           disabled={isFormDisabled}
-          placeholder="?"
         />
         <span className="mx-2">-</span>
-        <input
-          className="h-full w-8 rounded-md bg-base-content px-1 text-center text-xl text-base-100"
+        <ScoreInput
           value={predictionValues.teamBScore?.toString() || ""}
           onChange={onTeamBChange}
           disabled={isFormDisabled}
-          placeholder="?"
         />
       </div>
     </div>
   );
 };
+
+const ScoreInput: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = (props) => (
+  <input
+    className="h-full w-8 rounded-md bg-base-content px-1 text-center text-xl text-base-100"
+    placeholder="?"
+    inputMode="numeric"
+    {...props}
+  />
+);

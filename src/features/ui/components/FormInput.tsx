@@ -5,7 +5,7 @@ interface Props extends React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLIn
 
 export const FormInput: React.FC<Props> = ({ error, wrapperClassName, ...props }) => {
   return (
-    <div className={`form-control mb-4 w-full max-w-xs ${wrapperClassName}`}>
+    <div className={`form-control mb-4 w-full  ${wrapperClassName}`}>
       <input {...props} className={`input-bordered ${!!error ? "input-error" : ""} input `} />
       {!!error && (
         <label className="label">
