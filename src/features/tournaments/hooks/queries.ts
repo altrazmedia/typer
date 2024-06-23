@@ -17,6 +17,7 @@ import type {
 } from "../types";
 import { useCallback } from "react";
 import { getPredictionStatus } from "../utils";
+import { useNotifications } from "src/features/notifications/context/NotificationsContext";
 
 const tournamentsCollection = createCollection<TournamentDB>("tournaments");
 const predictionsCollection = createCollection<PredictionDB>("predictions");
@@ -100,6 +101,7 @@ export const useMyPredictions = (params: { uid: string; isEnabled: boolean }) =>
 
 export const usePredictionActions = (uid: string, gameId: string) => {
   const queryClient = useQueryClient();
+  const { displayNotification } = useNotifications();
 
   const addOrEditPrediction = useMutation({
     mutationFn: async ({ teamAScore, teamBScore }: PredictionParams) => {
@@ -107,15 +109,16 @@ export const usePredictionActions = (uid: string, gameId: string) => {
       const result = await getDocs(q);
       const predictionDoc = result.docs[0];
       const docRef = predictionDoc?.ref || doc(predictionsCollection);
-      const prediction: PredictionDB =  { gameId, uid, teamAScore, teamBScore };
+      const prediction: PredictionDB = { gameId, uid, teamAScore, teamBScore };
       await setDoc(docRef, prediction);
-      const predictionDb: Prediction = {...prediction, id: docRef.id };
+      const predictionDb: Prediction = { ...prediction, id: docRef.id };
       return predictionDb;
     },
     onSuccess: (newPrediction) => {
+      displayNotification({ message: "Typ zapisany!", type: "success" });
       queryClient.setQueryData([MY_PREDICTIONS_KEY], (data: Prediction[] | undefined) => {
         if (data) {
-          const index = data.findIndex(prediction => prediction.id === newPrediction.id);      
+          const index = data.findIndex((prediction) => prediction.id === newPrediction.id);
           if (index !== -1) {
             data[index] = newPrediction;
           } else {
@@ -128,7 +131,10 @@ export const usePredictionActions = (uid: string, gameId: string) => {
       });
     },
     onError: () => {
-      window.alert("Nie udało się zapisać typu. Możliwe, że mecz się już rozpoczął");
+      displayNotification({
+        message: "Nie udało się zapisać typu. Możliwe, że mecz się już rozpoczął.",
+        type: "error",
+      });
     },
   });
 
@@ -223,6 +229,8 @@ export const useStandings = (tournamentId: string) => {
 
 export const useGameActions = (tournamentId: string) => {
   const queryClient = useQueryClient();
+  const { displayNotification } = useNotifications();
+
   const gamesCollection = createCollection<GameDB>(`tournaments/${tournamentId}/games`);
 
   const addGame = useMutation<void, any, GameDB, any>({
@@ -232,9 +240,10 @@ export const useGameActions = (tournamentId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries([TOURNAMENT_GAMES_KEY]);
+      displayNotification({ message: "Mecz zapisany!", type: "success" });
     },
     onError: () => {
-      window.alert("Nie udało się dodać meczu");
+      displayNotification({ message: "Nie udało się dodać meczu", type: "error" });
     },
   });
 
@@ -248,6 +257,10 @@ export const useGameActions = (tournamentId: string) => {
         [TOURNAMENT_GAMES_KEY],
         (data) => data?.map((game) => (game.id === params.id ? params : game)) || []
       );
+      displayNotification({ message: "Mecz zapisany!", type: "success" });
+    },
+    onError: () => {
+      displayNotification({ message: "Nie udało się edytować meczu", type: "error" });
     },
   });
 
