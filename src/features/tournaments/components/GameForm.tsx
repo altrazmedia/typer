@@ -117,6 +117,7 @@ export const GameForm: React.FC<Props> = ({ game, submit, isLoading, header }) =
           onChange={handleScoreChange("teamAScore")}
           wrapperClassName="mb-0"
           error={errors.teamAScore}
+          inputMode="numeric"
         />
         <span className="mx-2">-</span>
         <FormInput
@@ -124,6 +125,7 @@ export const GameForm: React.FC<Props> = ({ game, submit, isLoading, header }) =
           onChange={handleScoreChange("teamBScore")}
           wrapperClassName="mb-0"
           error={errors.teamBScore}
+          inputMode="numeric"
         />
       </InputsGroup>
       <span className="text-lg">Data</span>
