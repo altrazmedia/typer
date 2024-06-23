@@ -1,5 +1,5 @@
 import { Timestamp } from "firebase/firestore";
-import { ChangeEvent, FormEvent, useState } from "react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
 
 import { FormInput } from "src/features/ui";
 
@@ -95,7 +95,7 @@ export const GameForm: React.FC<Props> = ({ game, submit, isLoading, header }) =
     <form onSubmit={handleSubmit}>
       {!!header && <h1 className="mb-4 text-center text-2xl">{header}</h1>}
       <span className="text-lg">Drużyny</span>
-      <div className="mt-3 mb-4 flex flex-row items-center">
+      <InputsGroup>
         <FormInput
           value={values.teamA}
           onChange={handleTeamChange("teamA")}
@@ -109,9 +109,9 @@ export const GameForm: React.FC<Props> = ({ game, submit, isLoading, header }) =
           wrapperClassName="mb-0"
           error={errors.teamB}
         />
-      </div>
+      </InputsGroup>
       <span className="text-lg">Wynik</span>
-      <div className="mt-3 mb-4 flex flex-row items-center ">
+      <InputsGroup>
         <FormInput
           value={values.teamAScore?.toString() || ""}
           onChange={handleScoreChange("teamAScore")}
@@ -125,9 +125,9 @@ export const GameForm: React.FC<Props> = ({ game, submit, isLoading, header }) =
           wrapperClassName="mb-0"
           error={errors.teamBScore}
         />
-      </div>
+      </InputsGroup>
       <span className="text-lg">Data</span>
-      <div className="mt-3 mb-6">
+      <div className="mt-3 mb-6 w-full">
         <FormInput
           value={values.kickoff}
           onChange={handleKickoffChange}
@@ -142,3 +142,7 @@ export const GameForm: React.FC<Props> = ({ game, submit, isLoading, header }) =
     </form>
   );
 };
+
+const InputsGroup: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <div className="mt-3 mb-4 flex flex-col items-center sm:flex-row">{children}</div>
+);
