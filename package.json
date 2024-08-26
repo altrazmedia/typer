@@ -32,7 +32,9 @@
   "scripts": {
     "dev": "vite --port 3000",
     "build": "tsc && vite build",
-    "preview": "vite preview --port 3500"
+    "preview": "vite preview --port 3500",
+    "emulators": "firebase emulators:start --import=./dev-data --project demo-app",
+    "export-emulators-data": "firebase emulators:export ./dev-data --project demo-app"
   },
   "eslintConfig": {
     "extends": [
